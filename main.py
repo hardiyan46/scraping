@@ -1,3 +1,4 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 
@@ -12,3 +13,22 @@ res = requests.get(url, params=params, headers=headers)
 #print(res.headers)
 soup = BeautifulSoup(res.text,'html.parser')
 print(soup.prettify())
+
+def get_total_pages():
+    params = {
+        'q': 'python developer',
+        'l': 'jakarta',
+        'vjk': 'b8bc9c3e08bc8ae3'
+    }
+
+    res = requests.get(url, params=params, headers=headers)
+    try:
+        os.mkdir('temp')
+    except FileExistsError:
+        pass
+
+    with open('temp/res.html', 'w+') as outfile:
+        outfile.write(res.text)
+        outfile.close()
+
+
