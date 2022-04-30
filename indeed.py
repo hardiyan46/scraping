@@ -55,10 +55,17 @@ def get_items():
     soup = BeautifulSoup(res.text, 'html.parser')
 
 #Scraping proses
-    contents = soup.find_all('table', '')
+    contents = soup.find_all('table', 'jobCard_mainContent')
 
+
+    for item in contents:
+        title = item.find('h2', 'jobTitle').text
+        company = item.find('span','companyName')
+        company_name = company.text
+
+        print(company_name)
 
 
 if __name__ == '__main__':
-    get_total_pages()
+    get_items()
 
