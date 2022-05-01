@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 url = 'https://id.indeed.com/jobs'
+site = 'https://id.indeed.com'
 params = {
     'q' : 'python developer',
     'l' : 'jakarta',
@@ -62,8 +63,17 @@ def get_items():
         title = item.find('h2', 'jobTitle').text
         company = item.find('span','companyName')
         company_name = company.text
+        try:
+            company_link = site + company.find('a') ['href']
+        except:
+            company_link = 'Link Tidak Ditemukan'
 
-        print(company_name)
+        data_dict = {
+            'Title' : title,
+            'Company Name' : company_name,
+            'Link' : company_link
+        }
+        print(data_dict)
 
 
 if __name__ == '__main__':
