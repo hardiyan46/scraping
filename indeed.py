@@ -1,5 +1,7 @@
 import os
 import requests
+import json
+import pandas as pd
 from bs4 import BeautifulSoup
 
 url = 'https://id.indeed.com/jobs'
@@ -16,14 +18,16 @@ res = requests.get(url, params=params, headers=headers)
 #soup = BeautifulSoup(res.text,'html.parser')
 #print(soup.prettify())
 
-def get_total_pages():
+def get_total_pages(query, location):
     params = {
-        'q': 'python developer',
-        'l': 'jakarta',
+        'q': query,
+        'l': location,
         'vjk': 'b8bc9c3e08bc8ae3'
     }
 
     res = requests.get(url, params=params, headers=headers)
+
+    ##create folder dan file
     try:
         os.mkdir('temp')
     except FileExistsError:
@@ -43,10 +47,10 @@ def get_total_pages():
 
 
 
-def get_items():
+def get_items(query, location):
     params = {
-        'q': 'python developer',
-        'l': 'jakarta',
+        'q': query,
+        'l': location,
         'vjk': 'b8bc9c3e08bc8ae3'
     }
     res = requests.get(url, params=params, headers=headers)
@@ -57,7 +61,7 @@ def get_items():
 
 #Scraping proses
     contents = soup.find_all('table', 'jobCard_mainContent')
-
+    job_list = []
 
     for item in contents:
         title = item.find('h2', 'jobTitle').text
@@ -67,13 +71,35 @@ def get_items():
             company_link = site + company.find('a') ['href']
         except:
             company_link = 'Link Tidak Ditemukan'
-
+        ##sorting data by dictionary
         data_dict = {
             'Title' : title,
             'Company Name' : company_name,
             'Link' : company_link
         }
-        print(data_dict)
+        job_list.append(data_dict)
+
+
+    ##export to json
+    try:
+        os.mkdir('json_result')
+    except FileExistsError:
+        pass
+    with open('json_result/job_list.json', 'w+') as json_data:
+        json.dump(job_list, json_data)
+    #print('File Json sudah dibuat')
+
+    ##export to csv
+    df = pd.DataFrame(job_list)
+    df.to_csv('indeed_data.csv', index=False)
+    df.to_excel('indeed_data.xlsx', index=False)
+    print('Export csv dan excel berhasil')
+
+##create Function Run
+def run():
+
+
+
 
 
 if __name__ == '__main__':
