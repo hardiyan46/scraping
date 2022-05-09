@@ -47,7 +47,7 @@ def get_total_pages(query, location):
     return total
 
 
-def get_items(query, location, start):
+def get_items(query, location, start, page):
     params = {
         'q': query,
         'l': location,
@@ -85,7 +85,7 @@ def get_items(query, location, start):
     with open('json_result/job_list.json', 'w+') as json_data:
         json.dump(job_list, json_data)
     return job_list
-    #print('File Json sudah dibuat')
+   #print('File Json sudah dibuat')
 
 """
     #export to csv
@@ -127,7 +127,7 @@ def run():
     except FileExistsError:
         pass
 
-    with open('reports/{}/json'. format(query), 'w+') as final_data:
+    with open('reports/{}.json'. format(query), 'w+') as final_data:
         json.dump(final_result, final_data)
     print('Data Json sudah dibuat')
 
