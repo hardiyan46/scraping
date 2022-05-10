@@ -1,4 +1,6 @@
 import os
+
+import pandas as pd
 import requests
 import requests
 from bs4 import BeautifulSoup
@@ -26,16 +28,22 @@ def get_total_pages():
         ouput.close()
     total_pages = []
     soup = BeautifulSoup(res.text, 'html.parser')
-    pagination = soup.find('ul', 'items pages-items')
-    pages = pagination.find_all('li')
+    pagination = soup.find('ul', 'pages-items')
+    pages = pagination.find_all('span', 'label')
+    pages_all = page.text
+    #print(pages)
+    #pages = pagination.find_all('li')
     for page in pages:
-        total_pages.append(page.text)
+       total_pages.append(page.text)
     total = int(max(total_pages))
-    return total
+    #return total
+    print(total)
 
 
-def get_all_item():
-    params = {'q': 'ban'}
+def get_all_item(query, product_list_dir, page):
+    params = {'q': query,
+              'p': product_list_dir
+}
     res = requests.get(url, params=params, headers=headers)
     try:
         os.mkdir('aos_output')
@@ -67,13 +75,33 @@ def get_all_item():
         #Export to json
         with open('aos_output/produk_list.json', 'w+') as produk_json:
                 json.dump(produk_list, produk_json)
-        print(produk_list)
+        return produk_list
 
 
+def create_document(dataframe, filename):
+    df = pd.DataFrame(dataframe)
+    df.to_csv(f'aos_output/{filename}.csv', index=False)
+    df.to_excel(f'aos_output/{filename}.xlsx', index=False)
+    print(f'File {filename}.csv dan {filename.xlsx} Berhasil dibuat')
+
+
+def run():
+    query = input('Masukan Kata kunci Pencarian : ')
+    total = get_total_pages(query)
+    counter = 0
+    final_result = []
+    for page in range(total):
+        page +=1
+        counter +=1
+        final_result +=get_all_item(query, product_list_dir)
+    with open('aos_output/{}.json'.format(query), 'w+') as final_data:
+        json.dump(final_result, final_data)
+    print('Data Json sudah dibuat')
+    create_document(final_result, query)
 
 
 if __name__ == '__main__':
-    get_all_item()
+    get_total_pages()
 
 
 

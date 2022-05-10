@@ -43,6 +43,7 @@ def get_total_pages(query, location):
     pages = pagination.find_all('li')
     for page in pages:
         total_pages.append(page.text)
+    print(total_pages)
     total = int(max(total_pages))
     return total
 
